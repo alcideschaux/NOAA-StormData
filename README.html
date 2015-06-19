@@ -101,7 +101,7 @@ opts_chunk$<span class="kw">set</span>(<span class="dt">message =</span> <span c
 <span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(stringr)
 <span class="kw">library</span>(ggvis)</code></pre>
-<p>We first downloaded the NOAA dataset from the Reproducible Research course on Coursera’s web site. Along with the dataset, 2 more files were downloaded, indicating how the variables in the dataset are defined: the National Weather Service Storm Data Documentation (referenced here as the <strong>NWS Manual</strong>) and the National Climatic Data Center Storm Events FAQ. We finally unzipped the <code>Storm_Data.bz2</code> dataset and saved the unzipped dataset to a file named <code>Storm_Data.csv</code> in the working directory. We then loaded the dataset into a data frame named <code>Data</code> and selected the variables to be used.</p>
+<p>We first downloaded the NOAA dataset from the Johns Hopkins <a href="https://www.coursera.org/course/repdata">Reproducible Research</a> course link on Coursera’s web site. The data for this assignment came in the form of a CSV file compressed via the bzip2 algorithm to reduce its size. Along with the dataset, 2 more files were downloaded, indicating how the variables in the dataset are defined: the National Weather Service Storm Data Documentation (referenced here as the <strong>NWS Manual</strong>) and the National Climatic Data Center Storm Events FAQ. We finally unzipped the <code>Storm_Data.bz2</code> dataset and saved the unzipped dataset to a file named <code>Storm_Data.csv</code> in the working directory. We then loaded the dataset into a data frame named <code>Data</code> and selected the variables to be used.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Data file</span>
 URL_data &lt;-<span class="st"> &quot;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2&quot;</span>
 <span class="kw">download.file</span>(URL_data, <span class="st">&quot;Files/Storm_Data.bz2&quot;</span>, <span class="dt">method =</span> <span class="st">&quot;wget&quot;</span>)
@@ -118,11 +118,11 @@ Data &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class=
 <span class="co"># Selecting the variables</span>
 Data &lt;-<span class="st"> </span>Data %&gt;%
 <span class="st">  </span><span class="kw">select</span>(EVTYPE, PROPDMGEXP, PROPDMG, FATALITIES, INJURIES)</code></pre>
-<p>The major challenge we had for the analysis was the careless report of the events into the <code>EVTYPE</code> variable. Indeed, the <strong>NWS Manual</strong> specifies 48 events (page 6) while we found 985 levels in <code>EVTYPE</code>. So, our first task was to recode these 985 levels of <code>EVTYPE</code> into the predefined 48 events, using a combination of string replacements and regular expressions. When it was not possible to assign a predefined event to a particular level we coded this particular level as <code>NA</code>. We finally filter the dataset to exclude rows with <code>NA</code> values and transform <code>EVTYPE</code> to factor.</p>
+<p>The major challenge we had for the analysis was the careless report of the events into the <code>EVTYPE</code> variable. Indeed, the <strong>NWS Manual</strong> specifies 48 events (page 6) while we found 985 levels in <code>EVTYPE</code>. So, our first task was to recode these 985 levels of <code>EVTYPE</code> into the predefined 48 events, using a combination of string replacements and regular expressions. When it was not possible to assign a predefined event to a particular level we coded this particular level as <code>NA</code>. We finally filter the dataset to exclude rows with <code>NA</code> values.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">source</span>(<span class="st">&quot;Files/Fix_EVTYPE.R&quot;</span>)
 Data &lt;-<span class="st"> </span>Data %&gt;%
 <span class="st">  </span><span class="kw">filter</span>(EVTYPE !=<span class="st"> &quot;NA&quot;</span>)</code></pre>
-<p>The final R script used for recoding, as indicated in the previous R chunk, is available <a href="https://github.com/alcideschaux/NOAA-StormData/blob/master/Files/Fix_EVTYPE.R">here</a>.</p>
+<p>The final R script used for recoding, as indicated in the previous R chunk, is available <a href="https://github.com/alcideschaux/NOAA-StormData/blob/master/Files/Fix_EVTYPE.R">here</a>. If the link doesn’t open directly please right click on it and select “Open link in new …”.</p>
 <p>We also noted similar inconsistencies in the <code>PROPDMGEXP</code> variable, with only 3 predefined levels (<strong>NWS Manual</strong>, page 12) and 18 levels in the downloaded dataset. So, our second task was to filter and recode <code>PROPDMGEXP</code> to include only the predefined levels. For this, we filter to keep only those levels that made sense. i.e., <code>m</code>, <code>M</code>, <code>K</code>, and <code>B</code>. We then replaced these string values for the corresponding numerical values. Finally, for estimating the total economic damage we combined <code>PROPDMG</code>and <code>PROPDMGEXP</code>, creating a new variable <code>PROPDMGTOTAL</code>:</p>
 <pre class="sourceCode r"><code class="sourceCode r">Data &lt;-<span class="st"> </span>Data %&gt;%
 <span class="st">  </span><span class="kw">filter</span>(PROPDMGEXP %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;m&quot;</span>, <span class="st">&quot;M&quot;</span>, <span class="st">&quot;K&quot;</span>, <span class="st">&quot;B&quot;</span>))
@@ -136,7 +136,7 @@ Data &lt;-<span class="st"> </span>Data %&gt;%
 </div>
 <div id="results" class="section level1">
 <h1>Results</h1>
-<p>We first summarized all number of harmful events (i.e., injuries and fatalities) and property damage estimates by event type. For this, The we created a summary table containing the following variables:</p>
+<p>We first summarized all number of harmful events (i.e., injuries and fatalities) and property damage estimates by event type. For this, we created a summary table containing the following variables:</p>
 <ul>
 <li>EVTYPE: hydrometereological event, as indicated in the <strong>NWS Manual</strong></li>
 <li>ALL_INJURIES: total number of injured people</li>
@@ -453,27 +453,27 @@ Most_Injuries %&gt;%
 <span class="st">  </span><span class="kw">ggvis</span>(~EVTYPE, ~ALL_INJURIES) %&gt;%
 <span class="st">  </span><span class="kw">layer_bars</span>(<span class="dt">fill =</span> ~EVTYPE) %&gt;%
 <span class="st">  </span><span class="kw">add_axis</span>(<span class="st">&quot;y&quot;</span>, <span class="dt">title_offset =</span> <span class="dv">60</span>)</code></pre>
-<p><div id="plot_id620989000-container" class="ggvis-output-container">
-<div id="plot_id620989000" class="ggvis-output"></div>
+<p><div id="plot_id555659086-container" class="ggvis-output-container">
+<div id="plot_id555659086" class="ggvis-output"></div>
 <div class="plot-gear-icon">
 <nav class="ggvis-control">
 <a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
 <ul class="ggvis-dropdown">
 <li>
 Renderer: 
-<a id="plot_id620989000_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id620989000" data-renderer="svg">SVG</a>
+<a id="plot_id555659086_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id555659086" data-renderer="svg">SVG</a>
  | 
-<a id="plot_id620989000_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id620989000" data-renderer="canvas">Canvas</a>
+<a id="plot_id555659086_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id555659086" data-renderer="canvas">Canvas</a>
 </li>
 <li>
-<a id="plot_id620989000_download" class="ggvis-download" data-plot-id="plot_id620989000">Download</a>
+<a id="plot_id555659086_download" class="ggvis-download" data-plot-id="plot_id555659086">Download</a>
 </li>
 </ul>
 </nav>
 </div>
 </div>
 <script type="text/javascript">
-var plot_id620989000_spec = {
+var plot_id555659086_spec = {
   "data": [
     {
       "name": ".0/group_by1/count2/stack3_flat",
@@ -645,7 +645,7 @@ var plot_id620989000_spec = {
   },
   "handlers": null
 };
-ggvis.getPlot("plot_id620989000").parseSpec(plot_id620989000_spec);
+ggvis.getPlot("plot_id555659086").parseSpec(plot_id555659086_spec);
 </script></p>
 </div>
 <div id="events-that-killed-people-the-most" class="section level3">
@@ -693,27 +693,27 @@ Most_Fatalities %&gt;%
 <span class="st">  </span><span class="kw">ggvis</span>(~EVTYPE, ~ALL_FATALITIES) %&gt;%
 <span class="st">  </span><span class="kw">layer_bars</span>(<span class="dt">fill =</span> ~EVTYPE) %&gt;%
 <span class="st">  </span><span class="kw">add_axis</span>(<span class="st">&quot;y&quot;</span>, <span class="dt">title_offset =</span> <span class="dv">60</span>)</code></pre>
-<p><div id="plot_id498635497-container" class="ggvis-output-container">
-<div id="plot_id498635497" class="ggvis-output"></div>
+<p><div id="plot_id118801077-container" class="ggvis-output-container">
+<div id="plot_id118801077" class="ggvis-output"></div>
 <div class="plot-gear-icon">
 <nav class="ggvis-control">
 <a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
 <ul class="ggvis-dropdown">
 <li>
 Renderer: 
-<a id="plot_id498635497_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id498635497" data-renderer="svg">SVG</a>
+<a id="plot_id118801077_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id118801077" data-renderer="svg">SVG</a>
  | 
-<a id="plot_id498635497_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id498635497" data-renderer="canvas">Canvas</a>
+<a id="plot_id118801077_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id118801077" data-renderer="canvas">Canvas</a>
 </li>
 <li>
-<a id="plot_id498635497_download" class="ggvis-download" data-plot-id="plot_id498635497">Download</a>
+<a id="plot_id118801077_download" class="ggvis-download" data-plot-id="plot_id118801077">Download</a>
 </li>
 </ul>
 </nav>
 </div>
 </div>
 <script type="text/javascript">
-var plot_id498635497_spec = {
+var plot_id118801077_spec = {
   "data": [
     {
       "name": ".0/group_by1/count2/stack3_flat",
@@ -885,7 +885,7 @@ var plot_id498635497_spec = {
   },
   "handlers": null
 };
-ggvis.getPlot("plot_id498635497").parseSpec(plot_id498635497_spec);
+ggvis.getPlot("plot_id118801077").parseSpec(plot_id118801077_spec);
 </script></p>
 <hr />
 </div>
@@ -935,27 +935,27 @@ Most_Damage %&gt;%
 <span class="st">  </span><span class="kw">ggvis</span>(~EVTYPE, ~ALL_PROPDMG) %&gt;%
 <span class="st">  </span><span class="kw">layer_bars</span>(<span class="dt">fill =</span> ~EVTYPE) %&gt;%
 <span class="st">  </span><span class="kw">add_axis</span>(<span class="st">&quot;y&quot;</span>, <span class="dt">title_offset =</span> <span class="dv">120</span>)</code></pre>
-<p><div id="plot_id240802757-container" class="ggvis-output-container">
-<div id="plot_id240802757" class="ggvis-output"></div>
+<p><div id="plot_id819360327-container" class="ggvis-output-container">
+<div id="plot_id819360327" class="ggvis-output"></div>
 <div class="plot-gear-icon">
 <nav class="ggvis-control">
 <a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
 <ul class="ggvis-dropdown">
 <li>
 Renderer: 
-<a id="plot_id240802757_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id240802757" data-renderer="svg">SVG</a>
+<a id="plot_id819360327_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id819360327" data-renderer="svg">SVG</a>
  | 
-<a id="plot_id240802757_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id240802757" data-renderer="canvas">Canvas</a>
+<a id="plot_id819360327_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id819360327" data-renderer="canvas">Canvas</a>
 </li>
 <li>
-<a id="plot_id240802757_download" class="ggvis-download" data-plot-id="plot_id240802757">Download</a>
+<a id="plot_id819360327_download" class="ggvis-download" data-plot-id="plot_id819360327">Download</a>
 </li>
 </ul>
 </nav>
 </div>
 </div>
 <script type="text/javascript">
-var plot_id240802757_spec = {
+var plot_id819360327_spec = {
   "data": [
     {
       "name": ".0/group_by1/count2/stack3_flat",
@@ -1127,7 +1127,7 @@ var plot_id240802757_spec = {
   },
   "handlers": null
 };
-ggvis.getPlot("plot_id240802757").parseSpec(plot_id240802757_spec);
+ggvis.getPlot("plot_id819360327").parseSpec(plot_id819360327_spec);
 </script></p>
 <hr />
 </div>
