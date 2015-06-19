@@ -56,7 +56,7 @@ Data <- Data %>%
   filter(EVTYPE != "NA")
 ```
 
-The final R script used for recoding, as indicated in the previous R chunk, is available [here]().
+The final R script used for recoding, as indicated in the previous R chunk, is available [here](https://github.com/alcideschaux/NOAA-StormData/blob/master/Files/Fix_EVTYPE.R).
 
 We also noted similar inconsistencies in the `PROPDMGEXP` variable, with only 3 predefined levels (__NWS Manual__, page 12) and 18 levels in the downloaded dataset. So, our second task was to filter and recode `PROPDMGEXP` to include only the predefined levels. For this, we filter to keep only those levels that made sense. i.e., `m`, `M`, `K`, and `B`. We then replaced these string values for the corresponding numerical values. Finally, for estimating the total economic damage we combined `PROPDMG`and `PROPDMGEXP`, creating a new variable `PROPDMGTOTAL`:
 
@@ -70,7 +70,7 @@ Data <- Data %>%
   mutate(PROPDMGTOTAL = PROPDMG * PROPDMGEXP)
 ```
 
-This is the dataset we used for the data analysis. All datasets, scripts and associated files are available [here]().
+This is the dataset we used for the data analysis. All datasets, scripts and associated files are available [here](https://github.com/alcideschaux/NOAA-StormData/tree/master/Files).
 
 ```{r echo = FALSE}
 # Let's save the Tidy Data into a CSV file for faster loading!! 
