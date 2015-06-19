@@ -179,27 +179,27 @@ Most_Injuries %>%
   add_axis("y", title_offset = 60)
 ```
 
-<!--html_preserve--><div id="plot_id613510081-container" class="ggvis-output-container">
-<div id="plot_id613510081" class="ggvis-output"></div>
+<!--html_preserve--><div id="plot_id620989000-container" class="ggvis-output-container">
+<div id="plot_id620989000" class="ggvis-output"></div>
 <div class="plot-gear-icon">
 <nav class="ggvis-control">
 <a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
 <ul class="ggvis-dropdown">
 <li>
 Renderer: 
-<a id="plot_id613510081_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id613510081" data-renderer="svg">SVG</a>
+<a id="plot_id620989000_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id620989000" data-renderer="svg">SVG</a>
  | 
-<a id="plot_id613510081_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id613510081" data-renderer="canvas">Canvas</a>
+<a id="plot_id620989000_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id620989000" data-renderer="canvas">Canvas</a>
 </li>
 <li>
-<a id="plot_id613510081_download" class="ggvis-download" data-plot-id="plot_id613510081">Download</a>
+<a id="plot_id620989000_download" class="ggvis-download" data-plot-id="plot_id620989000">Download</a>
 </li>
 </ul>
 </nav>
 </div>
 </div>
 <script type="text/javascript">
-var plot_id613510081_spec = {
+var plot_id620989000_spec = {
   "data": [
     {
       "name": ".0/group_by1/count2/stack3_flat",
@@ -371,7 +371,7 @@ var plot_id613510081_spec = {
   },
   "handlers": null
 };
-ggvis.getPlot("plot_id613510081").parseSpec(plot_id613510081_spec);
+ggvis.getPlot("plot_id620989000").parseSpec(plot_id620989000_spec);
 </script><!--/html_preserve-->
 
 ### Events that killed people the most
@@ -408,27 +408,27 @@ Most_Fatalities %>%
   add_axis("y", title_offset = 60)
 ```
 
-<!--html_preserve--><div id="plot_id199188050-container" class="ggvis-output-container">
-<div id="plot_id199188050" class="ggvis-output"></div>
+<!--html_preserve--><div id="plot_id498635497-container" class="ggvis-output-container">
+<div id="plot_id498635497" class="ggvis-output"></div>
 <div class="plot-gear-icon">
 <nav class="ggvis-control">
 <a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
 <ul class="ggvis-dropdown">
 <li>
 Renderer: 
-<a id="plot_id199188050_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id199188050" data-renderer="svg">SVG</a>
+<a id="plot_id498635497_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id498635497" data-renderer="svg">SVG</a>
  | 
-<a id="plot_id199188050_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id199188050" data-renderer="canvas">Canvas</a>
+<a id="plot_id498635497_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id498635497" data-renderer="canvas">Canvas</a>
 </li>
 <li>
-<a id="plot_id199188050_download" class="ggvis-download" data-plot-id="plot_id199188050">Download</a>
+<a id="plot_id498635497_download" class="ggvis-download" data-plot-id="plot_id498635497">Download</a>
 </li>
 </ul>
 </nav>
 </div>
 </div>
 <script type="text/javascript">
-var plot_id199188050_spec = {
+var plot_id498635497_spec = {
   "data": [
     {
       "name": ".0/group_by1/count2/stack3_flat",
@@ -600,7 +600,7 @@ var plot_id199188050_spec = {
   },
   "handlers": null
 };
-ggvis.getPlot("plot_id199188050").parseSpec(plot_id199188050_spec);
+ggvis.getPlot("plot_id498635497").parseSpec(plot_id498635497_spec);
 </script><!--/html_preserve-->
 
 ***
@@ -639,27 +639,27 @@ Most_Damage %>%
   add_axis("y", title_offset = 120)
 ```
 
-<!--html_preserve--><div id="plot_id585753275-container" class="ggvis-output-container">
-<div id="plot_id585753275" class="ggvis-output"></div>
+<!--html_preserve--><div id="plot_id240802757-container" class="ggvis-output-container">
+<div id="plot_id240802757" class="ggvis-output"></div>
 <div class="plot-gear-icon">
 <nav class="ggvis-control">
 <a class="ggvis-dropdown-toggle" title="Controls" onclick="return false;"></a>
 <ul class="ggvis-dropdown">
 <li>
 Renderer: 
-<a id="plot_id585753275_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id585753275" data-renderer="svg">SVG</a>
+<a id="plot_id240802757_renderer_svg" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id240802757" data-renderer="svg">SVG</a>
  | 
-<a id="plot_id585753275_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id585753275" data-renderer="canvas">Canvas</a>
+<a id="plot_id240802757_renderer_canvas" class="ggvis-renderer-button" onclick="return false;" data-plot-id="plot_id240802757" data-renderer="canvas">Canvas</a>
 </li>
 <li>
-<a id="plot_id585753275_download" class="ggvis-download" data-plot-id="plot_id585753275">Download</a>
+<a id="plot_id240802757_download" class="ggvis-download" data-plot-id="plot_id240802757">Download</a>
 </li>
 </ul>
 </nav>
 </div>
 </div>
 <script type="text/javascript">
-var plot_id585753275_spec = {
+var plot_id240802757_spec = {
   "data": [
     {
       "name": ".0/group_by1/count2/stack3_flat",
@@ -831,7 +831,7 @@ var plot_id585753275_spec = {
   },
   "handlers": null
 };
-ggvis.getPlot("plot_id585753275").parseSpec(plot_id585753275_spec);
+ggvis.getPlot("plot_id240802757").parseSpec(plot_id240802757_spec);
 </script><!--/html_preserve-->
 
 ***
