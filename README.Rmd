@@ -1,0 +1,180 @@
+---
+title: "Identification of the hydrometereological events that caused the most harmful effects and had the greatest economic consequences"
+output: 
+  html_document: 
+    highlight: zenburn
+    keep_md: yes
+    theme: flatly
+---
+
+***
+
+# Synopsis
+We analyzed the U.S. National Oceanic and Atmospheric Administration's storm database from the past 60 years. Our aim was to identify the hydrometereological events that caused the most harmful effects for human health (injuries and fatalities) and had the greatest economic consequences in terms of property damage. We found that the most harmful metereological event was the tornado, which caused over 90,000 direct injuries in the last 60 years. Similarly, most deadly events were caused also by tornadoes, with about 5,600 deaths during the evaluated period of time. Finally, flooding had the greatest economic consequences, with over 150 billion dollars in property damages.
+
+***
+
+# Data Processing
+In this section we describe (in words and code) how the data from the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database was loaded into R and processed for analysis. This database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage. The events in the database start in the year 1950 and end in November 2011. Data processing and analysis was done using R version 3.2.0 "Full of Ingredients" (R Foundation for Statistical Computing, Vienna, Austria).
+
+```{r Global, message = FALSE}
+library(knitr)
+opts_chunk$set(message = FALSE, fig.width = 9)
+library(R.utils)
+library(readr)
+library(dplyr)
+library(stringr)
+library(ggvis)
+```
+
+We first downloaded the NOAA dataset from the Reproducible Research course on Coursera's web site. Along with the dataset, 2 more files were downloaded, indicating how the variables in the dataset are defined: the National Weather Service Storm Data Documentation (referenced here as the __NWS Manual__) and the National Climatic Data Center Storm Events FAQ. We finally unzipped the `Storm_Data.bz2` dataset and saved the unzipped dataset to a file named `Storm_Data.csv` in the working directory. We then loaded the dataset into a data frame named `Data` and selected the variables to be used.
+
+```{r Get_Data, eval = FALSE}
+# Data file
+URL_data <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
+download.file(URL_data, "Files/Storm_Data.bz2", method = "wget")
+# Storm data documentation
+URL_Manual <- "https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf"
+download.file(URL_Manual, "Files/NMS_Manual.pdf", method = "wget")
+# FAQ
+URL_FAQ <- "https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf"
+download.file(URL_FAQ, "Files/FAQ.pdf", method = "wget")
+# Unzipping the dataset
+bunzip2("Files/Storm_Data.bz2", "Files/Storm_Data.csv")
+# Loading the dataset
+Data <- read_csv("Files/Storm_Data.csv")
+# Selecting the variables
+Data <- Data %>%
+  select(EVTYPE, PROPDMGEXP, PROPDMG, FATALITIES, INJURIES)
+```
+
+The major challenge we had for the analysis was the careless report of the events into the `EVTYPE` variable. Indeed, the __NWS Manual__ specifies 48 events (page 6) while we found 985 levels in `EVTYPE`. So, our first task was to recode these 985 levels of `EVTYPE` into the predefined 48 events, using a combination of string replacements and regular expressions. When it was not possible to assign a predefined event to a particular level we coded this particular level as `NA`. We finally filter the dataset to exclude rows with `NA` values and transform `EVTYPE` to factor.
+
+```{r EVTYPE_Recode, eval = FALSE}
+source("Files/Fix_EVTYPE.R")
+Data <- Data %>%
+  filter(EVTYPE != "NA")
+```
+
+The final R script used for recoding, as indicated in the previous R chunk, is available [here]().
+
+We also noted similar inconsistencies in the `PROPDMGEXP` variable, with only 3 predefined levels (__NWS Manual__, page 12) and 18 levels in the downloaded dataset. So, our second task was to filter and recode `PROPDMGEXP` to include only the predefined levels. For this, we filter to keep only those levels that made sense. i.e., `m`, `M`, `K`, and `B`. We then replaced these string values for the corresponding numerical values. Finally, for estimating the total economic damage we combined `PROPDMG`and `PROPDMGEXP`, creating a new variable `PROPDMGTOTAL`:
+
+```{r PROPDMGEXP_Recode, eval = FALSE}
+Data <- Data %>%
+  filter(PROPDMGEXP %in% c("m", "M", "K", "B"))
+Data$PROPDMGEXP <- Data$PROPDMGEXP %>%
+  plyr::revalue(c("m" = 1e+6, "M" = 1e+6, "K" = 1e+3, "B" = 1e+9)) %>%
+  as.numeric()
+Data <- Data %>%
+  mutate(PROPDMGTOTAL = PROPDMG * PROPDMGEXP)
+```
+
+This is the dataset we used for the data analysis. All datasets, scripts and associated files are available [here]().
+
+```{r echo = FALSE}
+# Let's save the Tidy Data into a CSV file for faster loading!! 
+# write_csv(Data, "Storm_Data_Final.csv")
+Data <- read_csv("Files/Storm_Data_Final.csv")
+```
+
+***
+
+# Results
+We first summarized all number of harmful events (i.e., injuries and fatalities) and property damage estimates by event type. For this, The we created a summary table containing the following variables:
+
+* EVTYPE: hydrometereological event, as indicated in the __NWS Manual__
+* ALL_INJURIES: total number of injured people
+* ALL_FATALITIES: total number of people who died as a direct consequence of the event
+* ALL_PROPDMG: total estimate of the property damage (in dollar amounts)
+
+```{r}
+Harmful <- Data %>%
+  group_by(EVTYPE) %>%
+  summarize(ALL_INJURIES = sum(INJURIES),
+            ALL_FATALITIES = sum(FATALITIES),
+            ALL_PROPDMG = sum(PROPDMGTOTAL))
+Harmful %>%
+  mutate(ALL_PROPDMG = format(ALL_PROPDMG, big.mark = ",")) %>%
+  kable(align = c("l", "c", "c", "c"))
+```
+
+We then focused on answering the 2 main questions of this study.
+
+***
+
+## 1) Across the United States, which types of events are most harmful with respect to population health?
+For answering this question we identified the events that had the 5 highest total number of injured people and total number of people who died as a direct consequence of the event.
+
+### Events that injured people the most
+The 5 most harmful events that caused injuries are shown in this table:
+
+```{r INJURIES_Table}
+Most_Injuries <- Harmful %>%
+  select(EVTYPE, ALL_INJURIES) %>%
+  arrange(desc(ALL_INJURIES)) %>%
+  head(5)
+Most_Injuries %>%
+  mutate(ALL_INJURIES = format(ALL_INJURIES, big.mark = ",")) %>%
+  kable(align = c("l", "c"))
+```
+
+The following plot shows the previous results:
+
+```{r INJURIES_Plot}
+Most_Injuries %>%
+  ggvis(~EVTYPE, ~ALL_INJURIES) %>%
+  layer_bars(fill = ~EVTYPE) %>%
+  add_axis("y", title_offset = 60)
+```
+
+### Events that killed people the most
+The 5 most harmful events that caused fatalities are shown in this table:
+
+```{r FATALITIES_Table}
+Most_Fatalities <- Harmful %>%
+  select(EVTYPE, ALL_FATALITIES) %>%
+  arrange(desc(ALL_FATALITIES)) %>%
+  head(5)
+Most_Fatalities %>%
+  mutate(ALL_FATALITIES = format(ALL_FATALITIES, big.mark = ",")) %>%
+  kable(align = c("l", "c"))
+```
+
+The following plot shows the previous results:
+
+```{r FATALITIES_Plot}
+Most_Fatalities %>%
+  ggvis(~EVTYPE, ~ALL_FATALITIES) %>%
+  layer_bars(fill = ~EVTYPE) %>%
+  add_axis("y", title_offset = 60)
+```
+
+***
+
+## 2) Across the United States, which types of events have the greatest economic consequences?
+For answering this question we identified the events that had the 5 highest property damage costs as a consequence of the event, as shown in this table:
+
+```{r DAMAGE_Table}
+Most_Damage <- Harmful %>%
+  select(EVTYPE, ALL_PROPDMG) %>%
+  arrange(desc(ALL_PROPDMG)) %>%
+  head(5)
+Most_Damage %>%
+  mutate(ALL_PROPDMG = format(ALL_PROPDMG, big.mark = ",")) %>%
+  kable(align = c("l", "c"))
+```
+
+The following plot shows the previous results:
+
+```{r DAMAGE_Plot}
+Most_Damage %>%
+  ggvis(~EVTYPE, ~ALL_PROPDMG) %>%
+  layer_bars(fill = ~EVTYPE) %>%
+  add_axis("y", title_offset = 120)
+```
+
+***
+
+# Conclusions
+By far, the most harmful metereological event has been the tornado, which has caused over 90,000 injuries in the last 60 years. Flood, lighting, thunderstorm wind, and heat were among the most harmful events following tornadoes. Similarly, most deadly events were caused also by tornadoes, with about 5,600 deaths in the past 60 years. Flash flood, heat, flood, and lightning were among the most deadly events following tornadoes. Finally, flooding had the greatest economic consequences, with over 150 billion dollars in property damages. Other hydrometereological events that caused great property damage were hurricanes, tornadoes, storm surges/tides, and hail.
